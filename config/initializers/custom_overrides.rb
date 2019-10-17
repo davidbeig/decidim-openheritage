@@ -26,4 +26,20 @@ Rails.application.config.to_prepare do
       body
     end
   end
+
+  Decidim::StaticMapGenerator.class_eval do
+    def uri
+      params = {
+        ll: "#{@resource.longitude},#{@resource.latitude}",
+        lang: "en-US",
+        l: "map",
+        z: @options[:zoom],
+        size: "#{@options[:width]},#{@options[:height]}"
+      }
+
+      URI.parse(Decidim.geocoder.fetch(:static_map_url)).tap do |uri|
+        uri.query = URI.encode_www_form params
+      end
+    end
+  end
 end
